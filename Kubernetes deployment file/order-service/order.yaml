@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-microservice-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: order-microservice
+  template:
+    metadata:
+      labels:
+        component: order-microservice
+    spec:
+      containers:
+        - name: media-microservice
+          image: order-microservice:latest
+          ports:
+            - containerPort: 3003
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          env:
+            - name: PGUSER
+              value: foodking
+            - name: PGHOST
+              value: user-postgres-cluster-ip-service
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: foodking_order
+            - name: PGPASSWORD
+              value: "1234"
+            - name: REDIS_HOST
+              value: user-redis-cluster-ip-service
+      imagePullSecrets:
+        - name: regcred
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-microservice-cluster-ip-service
+spec:
+  type: NodePort
+  selector:
+    component: order-microservice
+  ports:
+    - port: 80
+      targetPort: 3003

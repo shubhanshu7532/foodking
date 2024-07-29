@@ -1,0 +1,59 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fantasy-ingress
+  annotations:
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/v1/user
+            pathType: Prefix
+            backend:
+              service:
+                name: user-microservice-cluster-ip-service
+                port:
+                  number: 80
+          - path: /api/v1/rider
+            pathType: Prefix
+            backend:
+              service:
+                name: rider-microservice-cluster-ip-service
+                port:
+                  number: 80
+          - path: /api/v1/order
+            pathType: Prefix
+            backend:
+              service:
+                name: order-microservice-cluster-ip-service
+                port:
+                  number: 80
+          - path: /api/v1/coupon
+            pathType: Prefix
+            backend:
+              service:
+                name: order-microservice-cluster-ip-service
+                port:
+                  number: 80
+          - path: /api/v1/restaurant
+            pathType: Prefix
+            backend:
+              service:
+                name: restaurant-microservice-cluster-ip-service
+                port:
+                  number: 80
+          - path: /api/v1/menu
+            pathType: Prefix
+            backend:
+              service:
+                name: restaurant-microservice-cluster-ip-service
+                port:
+                  number: 80
+          - path: /api/v1/location
+            pathType: Prefix
+            backend:
+              service:
+                name: rider-microservice-cluster-ip-service
+                port:
+                  number: 80

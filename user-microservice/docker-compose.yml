@@ -1,0 +1,41 @@
+version: '3'
+services:
+  api:
+    image: ${DOCKER_API_IMAGE}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - 3000:3000
+      - 9229:9229 # port for node debugging
+    depends_on:
+      - redis
+    stdin_open: true
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./package.json:/app/package.json
+      - ./.env:/app/.env
+      - ./logs:/app/logs
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_SECRET}
+    networks:
+      - foodking_api_ff_network
+
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: redis
+    command: redis-server --bind 0.0.0.0 --protected-mode no
+    ports:
+      - 6379:6379
+    networks:
+      - foodking_api_ff_network
+
+networks:
+  foodking_api_ff_network:

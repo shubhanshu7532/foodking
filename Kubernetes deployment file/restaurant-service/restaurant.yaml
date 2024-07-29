@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-microservice-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: restaurant-microservice
+  template:
+    metadata:
+      labels:
+        component: restaurant-microservice
+    spec:
+      containers:
+        - name: restaurant-microservice
+          image: shubhanshu09/restaurant-microservice:latest
+          ports:
+            - containerPort: 3002
+          env:
+            - name: PGUSER
+              value: foodking
+            - name: PGHOST
+              value: user-postgres-cluster-ip-service
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: foodking_restaurant
+            - name: PGPASSWORD
+              value: "1234"
+            - name: REDIS_HOST
+              value: user-redis-cluster-ip-service
+      imagePullSecrets:
+        - name: regcred
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restaurant-microservice-cluster-ip-service
+spec:
+  type: NodePort
+  selector:
+    component: restaurant-microservice
+  ports:
+    - port: 80
+      targetPort: 3002
